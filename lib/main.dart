@@ -1,5 +1,17 @@
 import 'package:flutter/material.dart';
 
+void main() {
+  runApp(
+    Center(
+      child: Text(
+        'Hello, world!',
+        textDirection: TextDirection.ltr,
+      ),
+    )
+  );
+}
+
+/*
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -16,6 +28,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+*/
 
 /*
 import 'package:flutter/material.dart';
