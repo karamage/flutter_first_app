@@ -1,23 +1,9 @@
 // Create an infinite scrolling lazily loaded list
 
-//TODO 11/20  7. Animate your appの最初からやる
-
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(new FriendlychatApp());
-  /*
-  runApp(
-    new MaterialApp(
-      title: "Friendlychat",
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: new Text("Friendlychat"),
-        ),
-      ),
-    ),
-  );
-  */
 }
 
 class FriendlychatApp extends StatelessWidget {
@@ -35,7 +21,7 @@ class ChatScreen extends StatefulWidget {
   State createState() => new ChatScreenState();
 }
 
-class ChatScreenState extends State<ChatScreen> {
+class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = new TextEditingController(); //new
   @override
@@ -102,20 +88,38 @@ class ChatScreenState extends State<ChatScreen> {
     _textController.clear();
     ChatMessage message = new ChatMessage(
       text: text,
+      animationController: new AnimationController(
+        duration: new Duration(milliseconds: 700),
+        vsync: this,
+      ),
     );
     setState(() {
-      _messages.insert(0, message)
+      _messages.insert(0, message);
     });
+    message.animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    for (ChatMessage message in _messages)
+      message.animationController.dispose();
+    super.dispose();
   }
 }
 
 class ChatMessage extends StatelessWidget {
-  ChatMessage({this.text});
+  ChatMessage({this.text, this.animationController});
   final String text;
+  final AnimationController animationController;
   final String _name = "karamage";
   @override
   Widget build(BuildContext context) {
-    return new Container(
+    return new SizeTransition(
+      sizeFactor: new CurvedAnimation(
+        parent: animationController, curve: Curves.easeOut
+      ),
+      axisAlignment: 0.0,
+      child: new Container(
       margin: const EdgeInsets.symmetric(vertical: 10.0),
       child: new Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,8 +128,6 @@ class ChatMessage extends StatelessWidget {
             margin: const EdgeInsets.only(right: 16.0),
             child: new CircleAvatar(child: new Text(_name[0])),
           ),
-          // 6. Add a UI for displaying messages
-          //TODO new Column  //ここから続き
           new Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -137,6 +139,7 @@ class ChatMessage extends StatelessWidget {
             ],
           )
         ],
+      )
       )
     );
   }
